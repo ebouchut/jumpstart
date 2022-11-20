@@ -13,7 +13,7 @@ def add_template_repository_to_source_path
     at_exit { FileUtils.remove_entry(tempdir) }
     git clone: [
       "--quiet",
-      "https://github.com/excid3/jumpstart.git",
+      "https://github.com/ebouchut/jumpstart.git",
       tempdir
     ].map(&:shellescape).join(" ")
 
@@ -34,6 +34,24 @@ def rails_6_or_newer?
 end
 
 def add_gems
+  gem_group :development, :test do
+    add_gem 'dotenv-rails', require: 'dotenv/rails-now'
+    add_gem 'factory_bot_rails'
+
+    add_gem 'rspec-rails'
+    add_gem 'rubocop-performance', require: false
+    add_gem 'rubocop-rails', require: false
+    add_gem 'rubocop-rake', require: false
+    add_gem 'rubocop-rspec', require: false
+  end
+
+  gem_group :development do
+    add_gem 'annotate', require: false
+
+    add_gem 'guard', require: false
+    add_gem 'guard-rspec', require: false
+  end
+
   add_gem 'cssbundling-rails'
   add_gem 'devise', '~> 4.8', '>= 4.8.0'
   add_gem 'friendly_id', '~> 5.4'
@@ -222,6 +240,48 @@ def add_esbuild_script
   end
 end
 
+def add_annotate
+  generate 'annotate:install'
+
+  gsub_file 'lib/tasks/auto_annotate_models.rake',
+    /([ \t]*'exclude_(?:tests|fixtures|factories|serializers)'[ \t]+=>[ \t]*)'false',/,
+    '\1 \'true\','
+end
+
+def add_rspec
+  generate "rspec:install"
+
+  # Enable (ie. uncomment) suggested configuration
+  gsub_file 'spec/spec_helper.rb', /^(=begin|=end)/, ''
+end
+
+def add_factory_bot
+  create_file 'spec/support/factory_bot.rb', <<~EOS
+  RSpec.configure do |config|
+    config.include FactoryBot::Syntax::Methods
+  end
+  EOS
+
+  insert_into_file 'spec/rails_helper.rb',
+  "require 'support/factory_bot.rb'\n",
+  after: "# Add additional requires below this line. Rails is not loaded until this point!\n"
+
+  empty_directory 'spec/factories'
+  run 'touch spec/factories/.keep'
+end
+
+def add_pundit
+  insert_into_file 'app/controllers/application_controller.rb',
+    "  include Pundit::Authorization\n",
+    after: "class ApplicationController < ActionController::Base\n"
+
+  generate 'pundit:install'
+end
+
+def add_rubocop
+  run 'bundle exec rubocop --auto-gen-config'
+end
+
 def add_gem(name, *options)
   gem(name, *options) unless gem_exists?(name)
 end
@@ -254,6 +314,9 @@ after_bundle do
   add_sitemap
   add_announcements_css
   add_esbuild_script
+  add_rspec
+  add_factory_bot
+  add_annotate
   rails_command "active_storage:install"
 
   # Make sure Linux is in the Gemfile.lock for deploying
