@@ -150,7 +150,7 @@ def add_sidekiq
     "require 'sidekiq/web'\n\n",
     before: "Rails.application.routes.draw do"
 
-  content = <<~RUBY
+  content = <<~RUBY.indent(2)
                 authenticate :user, lambda { |u| u.admin? } do
                   mount Sidekiq::Web => '/sidekiq'
 
