@@ -263,7 +263,7 @@ def add_factory_bot
   EOS
 
   insert_into_file 'spec/rails_helper.rb',
-  "require 'support/factory_bot.rb'\n",
+  "require 'support/factory_bot'\n",
   after: "# Add additional requires below this line. Rails is not loaded until this point!\n"
 
   empty_directory 'spec/factories'
@@ -325,12 +325,14 @@ after_bundle do
   copy_templates
 
   # Commit everything to git
-  unless ENV["SKIP_GIT"]
+  unless ENV['SKIP_GIT']
     git :init
-    git add: "."
-    # git commit will fail if user.email is not configured
     begin
-      git commit: %( -m 'Initial commit' )
+      # git commit will fail if user.email is not configured
+      git commit: %( -m 'Initial commit' --allow-empty )
+
+      git add: '.'
+      git commit: %( -m 'Jumpstart Rails App' )
     rescue StandardError => e
       puts e.message
     end
