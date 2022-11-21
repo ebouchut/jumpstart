@@ -305,6 +305,11 @@ after_bundle do
   add_authorization
   add_javascript
   add_announcements
+
+  # Silence net protocol warnings:  warning: already initialized constant Net::ProtocRetryError
+  # See https://github.com/rails/rails/pull/44175
+  gem 'net-http'
+
   add_notifications
   add_multiple_authentication
   add_sidekiq
