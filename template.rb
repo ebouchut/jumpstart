@@ -47,9 +47,13 @@ def add_gems
 
   gem_group :development do
     add_gem 'annotate', require: false
-
+    add_gem 'better_errors'
+    add_gem 'binding_of_caller'
+    add_gem 'bullet'
     add_gem 'guard', require: false
     add_gem 'guard-rspec', require: false
+    add_gem 'metric_fu', require: false
+    add_gem 'railroady', require: false
   end
 
   add_gem 'cssbundling-rails'
@@ -226,6 +230,13 @@ def add_bootstrap
   rails_command "css:install:bootstrap"
 end
 
+def add_bullet
+  generate 'bullet:install'
+  insert_into_file('app/jobs/application_job.rb',
+                   " . include Bullet::ActiveJob if Rails.env.development?\n",
+                   after: "class ApplicationJob < ActiveJob::Base\n")
+end
+
 def add_announcements_css
   insert_into_file 'app/assets/stylesheets/application.bootstrap.scss', '@import "jumpstart/announcements";'
 end
@@ -322,6 +333,7 @@ after_bundle do
   add_rspec
   add_factory_bot
   add_annotate
+  add_bullet
   rails_command "active_storage:install"
 
   # Make sure Linux is in the Gemfile.lock for deploying
