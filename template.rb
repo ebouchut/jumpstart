@@ -35,6 +35,7 @@ end
 
 def add_gems
   gem_group :development, :test do
+    add_gem 'capybara'
     add_gem 'dotenv-rails', require: 'dotenv/rails-now'
     add_gem 'factory_bot_rails'
 
@@ -281,6 +282,12 @@ def add_factory_bot
   run 'touch spec/factories/.keep'
 end
 
+def add_capybara
+  insert_into_file 'spec/rails_helper.rb',
+                   "require 'capybara/rails'\n",
+                   after: "# Add additional requires below this line. Rails is not loaded until this point!\n"
+end
+
 def add_pundit
   insert_into_file 'app/controllers/application_controller.rb',
     "  include Pundit::Authorization\n",
@@ -332,6 +339,7 @@ after_bundle do
   add_esbuild_script
   add_rspec
   add_factory_bot
+  add_capybara
   add_annotate
   add_bullet
   rails_command "active_storage:install"
