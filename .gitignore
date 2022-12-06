@@ -2,3 +2,8 @@
 .idea
 .idea/
 
+#~~~~~~~~~~~~~~~~~~~~
+# RSpec
+#~~~~~~~~~~~~~~~~~~~~
+.rspec.local
+spec/examples.txt
