@@ -71,6 +71,7 @@ def add_gems
   add_gem 'pundit', '~> 2.1'
   add_gem 'sidekiq', '~> 6.2'
   add_gem 'sitemap_generator', '~> 6.1'
+  add_gem 'strong_migrations'
   add_gem 'whenever', require: false
   add_gem 'responders', github: 'heartcombo/responders', branch: 'main'
 end
@@ -300,6 +301,10 @@ def add_rubocop
   run 'bundle exec rubocop --auto-gen-config'
 end
 
+def add_strong_migrations
+  generate 'strong_migrations:install'
+end
+
 def add_gem(name, *options)
   gem(name, *options) unless gem_exists?(name)
 end
@@ -342,6 +347,7 @@ after_bundle do
   add_capybara
   add_annotate
   add_bullet
+  add_strong_migrations
   rails_command "active_storage:install"
 
   # Make sure Linux is in the Gemfile.lock for deploying
