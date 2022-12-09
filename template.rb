@@ -46,6 +46,10 @@ def add_gems
     add_gem 'rubocop-rspec', require: false
   end
 
+  gem_group :test do
+    add_gem 'faker'
+  end
+
   gem_group :development do
     add_gem 'annotate', require: false
     add_gem 'better_errors'
