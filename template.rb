@@ -268,8 +268,12 @@ end
 def add_rspec
   generate "rspec:install"
 
-  # Enable (ie. uncomment) suggested configuration
+  # Enable (ie. uncomment) Rspec suggested configuration
   gsub_file 'spec/spec_helper.rb', /^(=begin|=end)/, ''
+
+  # Autoload  spec/support/**/*.rb
+  autoload_support = "Dir[Rails.root.join('spec', 'support', '**', '*.rb')].sort.each { |f| require f }"
+  uncomment_lines 'spec/rails_helper.rb', Regexp.escape(autoload_support)
 end
 
 def add_factory_bot
